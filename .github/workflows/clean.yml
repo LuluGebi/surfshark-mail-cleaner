@@ -1,5 +1,13 @@
 name: Surfshark mail cleaner
 
+permissions:
+  actions: write
+  contents: read
+
+concurrency:
+  group: surfshark-cleaner
+  cancel-in-progress: false
+
 on:
   schedule:
     - cron: '*/5 * * * *'
@@ -27,3 +35,8 @@ jobs:
           GMAIL_CLIENT_SECRET: ${{ secrets.GMAIL_CLIENT_SECRET }}
           GMAIL_REFRESH_TOKEN: ${{ secrets.GMAIL_REFRESH_TOKEN }}
           RUN_SECONDS: ${{ github.event.inputs.run_seconds || '280' }}
+      - name: Chain next run
+        if: always()
+        run: gh workflow run clean.yml --repo "${{ github.repository }}" -f run_seconds=280
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
