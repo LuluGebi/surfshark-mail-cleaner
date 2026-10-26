@@ -1,0 +1,29 @@
+name: Surfshark mail cleaner
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+    - cron: '2-59/5 * * * *'
+  workflow_dispatch:
+    inputs:
+      run_seconds:
+        description: 'How long to poll (seconds)'
+        required: false
+        default: '280'
+
+jobs:
+  clean:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install requests
+      - run: python clean.py
+        env:
+          GMAIL_CLIENT_ID: ${{ secrets.GMAIL_CLIENT_ID }}
+          GMAIL_CLIENT_SECRET: ${{ secrets.GMAIL_CLIENT_SECRET }}
+          GMAIL_REFRESH_TOKEN: ${{ secrets.GMAIL_REFRESH_TOKEN }}
+          RUN_SECONDS: ${{ github.event.inputs.run_seconds || '280' }}
