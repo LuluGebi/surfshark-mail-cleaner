@@ -29,7 +29,7 @@ while time.time() < deadline:
         data = r.json()
         msgs = data.get('messages', [])
         if not msgs:
-            time.sleep(5)
+            time.sleep(1)
             continue
         for m in msgs:
             d = requests.delete('https://gmail.googleapis.com/gmail/v1/users/me/messages/' + m['id'],
@@ -38,9 +38,9 @@ while time.time() < deadline:
                 deleted += 1
             elif d.status_code == 401:
                 at = get_token(); H = {'Authorization': 'Bearer ' + at}
-        time.sleep(2)
+        time.sleep(1)
     except Exception as e:
         print('err', type(e).__name__, str(e)[:200], flush=True)
-        time.sleep(5)
+        time.sleep(1)
 
 print('deleted_total=%d' % deleted, flush=True)
